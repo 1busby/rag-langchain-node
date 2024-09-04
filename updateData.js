@@ -1,12 +1,13 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { PDFLoader } from "langchain/document_loaders/fs/pdf";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { Chroma } from "@langchain/community/vectorstores/chroma";
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { ChromaClient } from 'chromadb';
 import { getEmbeddingFunction } from './embeddings.js';
 
-const CHROMA_PATH = "chroma";
+const CHROMA_PATH = "http://localhost:8000";
 const DATA_PATH = "data";
+const COLLECTION_NAME = "my_collection";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -42,25 +43,57 @@ async function splitDocuments(documents) {
 }
 
 async function addToChroma(chunks) {
-  const embeddings = await getEmbeddingFunction();
-  const db = await Chroma.fromExisting(embeddings, { persistDirectory: CHROMA_PATH });
+  const client = new ChromaClient({ path: CHROMA_PATH });
+  const embeddingFunction = await getEmbeddingFunction();
 
+  let collection;
+  try {
+    collection = await client.getCollection({ name: COLLECTION_NAME, embeddingFunction });
+  } catch (e) {
+    collection = await client.createCollection({ name: COLLECTION_NAME, embeddingFunction });
+  }
+  
+  console.log('LOOK 3');
   const chunksWithIds = calculateChunkIds(chunks);
 
-  const existingItems = await db.get();
-  const existingIds = new Set(existingItems.ids);
-  console.log(`Number of existing documents in DB: ${existingIds.size}`);
+  console.log(`Adding ${chunksWithIds.length} chunks to the database...`);
+  
+  // Add chunks in batches to avoid overwhelming the database
+  const batchSize = 100;
+  let chunksAdded = 0;
+  for (let i = 0; i < chunksWithIds.length; i += batchSize) {
+    console.log('LOOK i', i);
+    console.log('LOOK chunksWithIds.length', chunksWithIds.length);
+    if (chunksAdded >= chunksWithIds.length) {
+      break;
+    }
+    const batch = chunksWithIds.slice(i, i + batchSize);
+    
+    chunksAdded += batchSize;
+    let newChunks = {
+      ids: [],
+      metadatas: [],
+      documents: [],
+    };
 
-  const newChunks = chunksWithIds.filter(chunk => !existingIds.has(chunk.metadata.id));
+    batch.forEach(chunk => {
+      newChunks.ids.push(chunk.metadata.id);
+      // newChunks.embeddings.push(chunk.pageContent);
+      newChunks.metadatas.push(chunk.metadata);
+      newChunks.documents.push(chunk.pageContent);
+    });
 
-  if (newChunks.length) {
-    console.log(`👉 Adding new documents: ${newChunks.length}`);
-    const newChunkIds = newChunks.map(chunk => chunk.metadata.id);
-    await db.addDocuments(newChunks, { ids: newChunkIds });
-    await db.persist();
-  } else {
-    console.log("✅ No new documents to add");
+    console.log(newChunks.ids.length);
+    // console.log(newChunks.embeddings.length);
+    console.log(newChunks.metadatas.length);
+    console.log(newChunks.documents.length);
+
+
+    await collection.add(newChunks);
+    console.log(`Added batch ${i / batchSize + 1} of ${Math.ceil(chunksWithIds.length / batchSize)}`);
   }
+
+  console.log("✅ All documents added to the database");
 }
 
 function calculateChunkIds(chunks) {
