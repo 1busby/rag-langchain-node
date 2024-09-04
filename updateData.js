@@ -53,7 +53,6 @@ async function addToChroma(chunks) {
     collection = await client.createCollection({ name: COLLECTION_NAME, embeddingFunction });
   }
   
-  console.log('LOOK 3');
   const chunksWithIds = calculateChunkIds(chunks);
 
   console.log(`Adding ${chunksWithIds.length} chunks to the database...`);
@@ -62,8 +61,6 @@ async function addToChroma(chunks) {
   const batchSize = 100;
   let chunksAdded = 0;
   for (let i = 0; i < chunksWithIds.length; i += batchSize) {
-    console.log('LOOK i', i);
-    console.log('LOOK chunksWithIds.length', chunksWithIds.length);
     if (chunksAdded >= chunksWithIds.length) {
       break;
     }
@@ -82,11 +79,6 @@ async function addToChroma(chunks) {
       newChunks.metadatas.push(chunk.metadata);
       newChunks.documents.push(chunk.pageContent);
     });
-
-    console.log(newChunks.ids.length);
-    // console.log(newChunks.embeddings.length);
-    console.log(newChunks.metadatas.length);
-    console.log(newChunks.documents.length);
 
 
     await collection.add(newChunks);

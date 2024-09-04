@@ -440,3 +440,13 @@ chromadb.db.base.UniqueConstraintError: Collection my_collection already exists
 [32mINFO[0m:     [04-09-2024 06:38:07] 127.0.0.1:59599 - "GET /api/v1/collections/my_collection?tenant=default_tenant&database=default_database HTTP/1.1" 200
 [36mDEBUG[0m:    [04-09-2024 06:38:07] Starting component PersistentLocalHnswSegment
 [32mINFO[0m:     [04-09-2024 06:38:07] 127.0.0.1:59599 - "POST /api/v1/collections/2ea270c1-ab01-459c-8ce0-bfe932abbeb5/add HTTP/1.1" 201
+[32mINFO[0m:     [04-09-2024 07:01:34] ::1:60087 - "GET /api/v1/collections/my_collection?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [04-09-2024 07:01:35] ::1:60087 - "POST /api/v1/collections/2ea270c1-ab01-459c-8ce0-bfe932abbeb5/query HTTP/1.1" 200
+[32mINFO[0m:     [04-09-2024 07:03:34] ::1:60113 - "GET /api/v1/collections/my_collection?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [04-09-2024 07:03:35] ::1:60113 - "POST /api/v1/collections/2ea270c1-ab01-459c-8ce0-bfe932abbeb5/query HTTP/1.1" 200
+[32mINFO[0m:     [04-09-2024 07:06:56] ::1:60153 - "GET /api/v1/collections/my_collection?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [04-09-2024 07:06:56] ::1:60153 - "POST /api/v1/collections/2ea270c1-ab01-459c-8ce0-bfe932abbeb5/query HTTP/1.1" 200
+[32mINFO[0m:     [04-09-2024 07:08:22] ::1:60173 - "GET /api/v1/collections/my_collection?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [04-09-2024 07:08:23] ::1:60173 - "POST /api/v1/collections/2ea270c1-ab01-459c-8ce0-bfe932abbeb5/query HTTP/1.1" 200
+[32mINFO[0m:     [04-09-2024 07:09:29] ::1:60192 - "GET /api/v1/collections/my_collection?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [04-09-2024 07:09:29] ::1:60192 - "POST /api/v1/collections/2ea270c1-ab01-459c-8ce0-bfe932abbeb5/query HTTP/1.1" 200
